@@ -1,43 +1,24 @@
 <template >
   <div class="container" >
-    <span @click="demo">demo</span>
-   {{msg}}
+    <span>demo</span>
   </div >
 </template >
 
 <script >
-
-import Webuploader from 'webuploader'
+import DswContainer from 'components/common/container'
 
 export default {
   name: 'App',
-  data () {
-    return {
-      msg: 'hello sirius ' + process.env.NODE_ENV
-    }
-  },
-  mounted () {
-    console.log(Webuploader)
-  },
-  methods: {
-    demo (e) {
-      console.log(e)
-    }
+  components: {
+    DswContainer
   }
 }
 </script >
 
 <style lang="stylus" >
-  .container{
-    background-color: red
-    span {
-      cursor : pointer
-    }
-  }
+
 </style >
 
 <style lang="stylus" scoped >
-  .container{
-    background-color: red
-  }
+
 </style >

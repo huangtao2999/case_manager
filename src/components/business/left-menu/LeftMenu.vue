@@ -1,10 +1,9 @@
 <template>
-  <aside class="dsw-left-menu pull-left">
+  <aside class="dsw-left-menu pull-left" :class="{'dsw-left-menu-collapsed':!isExpanded}">
     <nav class="dsw-left-menu-nav" ref="dsw-left-menu-nav">
-        <dsw-menu :menuLists="menuLists" @dswRefreshBScroll="refreshBScroll"></dsw-menu>
+      <dsw-menu :menuLists="menuLists" path="0" @dswMenuFolder="menuFolderHandler"></dsw-menu>
     </nav>
-    <img class="dsw-menu-toggle-btn" @click.stop="toggleHandler" v-show="opened" src="./images/arrow-left.png" />
-    <img class="dsw-menu-toggle-btn" @click.stop="toggleHandler" v-show="!opened" src="./images/arrow-right.png" />
+    <span class="dsw-menu-toggle-btn" :class="{'dsw-menu-toggle-expanded':isExpanded}" @click="toggleExpandedHandler"></span>
   </aside>
 </template>
 
@@ -14,50 +13,56 @@ import BScroll from 'better-scroll'
 
 import DswMenu from 'components/function/menu'
 
-const {mapState, mapActions} = createNamespacedHelpers('index')
+const {mapState, mapMutations, mapActions} = createNamespacedHelpers('index')
 
 export default {
   name: 'LeftMenu',
   data () {
     return {
-      betterScroll: null,
-      opened: true
+      betterScroll: null
     }
+  },
+  computed: {
+    ...mapState(['menuLists', 'isExpanded'])
   },
   components: {
     DswMenu
   },
   mounted () {
+    this.$showLoading(3)
     this.getMenuLists({vm: this}).then((result) => {
+      this.$hideLoading()
       this.$nextTick(() => {
         this.betterScroll = new BScroll(this.$refs['dsw-left-menu-nav'], {
-          mouseWheel: true
+          mouseWheel: true,
+          scrollbar: true
         })
       })
     })
   },
   methods: {
     ...mapActions(['getMenuLists']),
-    refreshBScroll (payload) {
+    ...mapMutations(['toggleExpandedHandler']),
+
+    menuFolderHandler () {
       this.betterScroll.refresh()
-    },
-    toggleHandler (e) {
-      this.opened = !this.opened
     }
-  },
-  computed: {
-    ...mapState(['menuLists'])
   }
 }
 </script>
 
 <style lang="stylus">
   .dsw-left-menu{
-    height :100%;
-    padding :5px 10px;
     position : relative;
+    width : 3.27rem;
+    height :100%;
+    padding :5px 0 5px 10px;
+    margin : 0 10px 0 0;
+    &.dsw-left-menu-collapsed{
+      width :0;
+      margin :0;
+    }
     .dsw-left-menu-nav{
-      width : 3.27rem;
       height : 100%;
       overflow : hidden;
       background : url("./images/left-menu-bg.png") no-repeat scroll 0 0/100% 100%;
@@ -70,6 +75,10 @@ export default {
       top :50%;
       left :-20px;
       transform :translate(0,-50%);
+      background : url("./images/arrow-right.png") no-repeat scroll 0 0/100% 100%;
+      &.dsw-menu-toggle-expanded{
+        background : url("./images/arrow-left.png") no-repeat scroll 0 0/100% 100%;
+      }
     }
   }
 </style>
