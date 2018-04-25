@@ -1,5 +1,5 @@
 <template>
-    <div class="dsw-container" id="dsw-container">
+    <div class="container-fluid dsw-container" id="dsw-container">
       <slot></slot>
     </div>
 </template>

@@ -30,7 +30,7 @@ env:
 # Thus, derived Bootstrap variables can depend on values from here.
 # See the Bootstrap _variables.scss file for examples of derived Bootstrap variables.
 #
-# preBootstrapCustomizations: ./src/assets/sass/_variable.scss
+preBootstrapCustomizations: .\src\assets\sass\_variables.scss
 
 
 # This gets loaded after bootstrap/variables is loaded
@@ -64,33 +64,33 @@ styles:
   grid: true
   # tables: true
   forms: true
-  # buttons: true
+  buttons: true
 
   # Components
   component-animations: true
   # dropdowns: true
-  # button-groups: true
-  # input-groups: true
+  button-groups: true
+  input-groups: true
   # navs: true
   # navbar: true
   # breadcrumbs: true
   # pagination: true
   # pager: true
-  # labels: true
-  # badges: true
+  labels: true
+  badges: true
   # jumbotron: true
-  # thumbnails: true
+  thumbnails: true
   # alerts: true
-  # progress-bars: true
+  progress-bars: true
   # media: true
-  # list-group: true
-  # panels: true
+  list-group: true
+  panels: true
   # wells: true
-  # responsive-embed: true
-  # close: true
+  responsive-embed: true
+  close: true
 
   # Components w/ JavaScript
-  # modals: true
+  modals: true
   # tooltip: true
   # popovers: true
   # carousel: true

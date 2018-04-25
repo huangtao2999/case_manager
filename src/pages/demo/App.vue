@@ -1,16 +1,14 @@
 <template >
-  <div class="container" >
-    <span>demo</span>
-  </div >
+  <iframe-container></iframe-container>
 </template >
 
 <script >
-import DswContainer from 'components/common/container'
+import IframeContainer from 'components/common/iframe-container'
 
 export default {
   name: 'App',
   components: {
-    DswContainer
+    IframeContainer
   }
 }
 </script >
