@@ -6,6 +6,7 @@
         <template slot="panel-footer"><slot name="panel-footer"></slot></template>
       </dsw-panel>
     </div>
+
 </template>
 
 <script>
