@@ -27,10 +27,14 @@
 </template >
 
 <script >
+
+import config from 'assets/js/config'
 import 'assets/js/vee-validate'
 
 import DswContainer from 'components/common/container'
 import DswVideo from 'components/common/video'
+
+const jsonp = require('jsonp')
 
 export default {
   name: 'App',
@@ -86,13 +90,12 @@ export default {
     loginHandler (e) {
       this.$validator.validateAll().then((result) => {
         if (result) {
-          const username = this.username
-          const password = this.password
-          this.$https.post('/LoginRpc/login', {username, password}).then((result) => {
-            localStorage.setItem('dsw-token-info', JSON.stringify(result.data))
+          // const userName = this.username
+          // const passWord = this.password
+          jsonp(config.baseURL + config.api.login, (error, result) => {
+            console.log(result)
+            localStorage.setItem(config.tokenKey, result.data.token)
             location.href = '/index.html'
-          }).catch(() => {
-            this.$toastr.error('登录失败')
           })
         }
       })
