@@ -8,10 +8,10 @@ import toastr from './toastr'
 
 const token = new Token(config.tokenKey)
 const source = axios.CancelToken.source()
-
+console.log(process)
 const axiosInstance = axios.create({
-  baseURL: process.env === 'development' ? 'http://rap2api.taobao.org/app/mock/10074/' : config.baseURL,
-  timeout: process.env === 'development' ? 0 : 6000,
+  baseURL: process.env.NODE_ENV === 'development' ? 'http://rap2api.taobao.org/app/mock/10074/' : config.baseURL,
+  timeout: process.env.NODE_ENV === 'development' ? 0 : 6000,
   withCredentials: true,
   responseType: 'json'
 })

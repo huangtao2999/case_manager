@@ -19,7 +19,7 @@
               黄石市公安局西塞山分局刑侦大队
             </div>
 
-            <dsw-table style="width: 100%;" :tableData="tableData" :columns="columns" :paginateInfo="paginateInfo"></dsw-table>
+            <dsw-table style="width: 100%;" :tableData="tableData" :columns="columns"></dsw-table>
 
             <dsw-pagination slot="panel-footer">
               <button type="button">新增</button>

@@ -63,6 +63,10 @@ https.jsonp = (url, options) => {
   return promise
 }
 
+if (process.env.NODE_ENV === 'development') {
+  https.jsonp = https.get
+}
+
 Vue.prototype.$https = https
 
 export default {...https}
