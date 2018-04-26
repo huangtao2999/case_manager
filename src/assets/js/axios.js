@@ -47,7 +47,7 @@ axiosInstance.interceptors.response.use((response) => {
 
   return data
 }, (reason) => {
-  toastr.error('Response Error')
+  toastr.error('JSON Response Error')
   return Promise.reject(reason)
 })
 
