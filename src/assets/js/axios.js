@@ -21,7 +21,7 @@ if (process.env === 'developments') {
 }
 
 axiosInstance.interceptors.request.use((options) => {
-  let _token = token.getToken()
+  const _token = token.getToken()
 
   // token 不存在 且 不是登录页发出的请求
   if (!_token && !/\/login.html$/.test(window.location.href)) {
@@ -40,11 +40,9 @@ axiosInstance.interceptors.request.use((options) => {
 axiosInstance.interceptors.response.use((response) => {
   const data = response.data || JSON.parse(response.request.responseText)
 
-  console.log(data)
-  console.log(response)
   // TODO 登录失效处理
   if (data.code !== 0) {
-    toastr.error(data.msg || '非法请求')
+    toastr.error(data.msg || '非法请求，响应异常')
     Promise.reject(data)
   }
 

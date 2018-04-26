@@ -34,8 +34,6 @@ import 'assets/js/vee-validate'
 import DswContainer from 'components/common/container'
 import DswVideo from 'components/common/video'
 
-const jsonp = require('jsonp')
-
 export default {
   name: 'App',
   data () {
@@ -90,9 +88,9 @@ export default {
     loginHandler (e) {
       this.$validator.validateAll().then((result) => {
         if (result) {
-          // const userName = this.username
-          // const passWord = this.password
-          jsonp(config.baseURL + config.api.login, (error, result) => {
+          const userName = this.username
+          const passWord = this.password
+          this.$https.jsonp(config.api.login, {params: {userName, passWord}}).then((result) => {
             console.log(result)
             localStorage.setItem(config.tokenKey, result.data.token)
             location.href = '/index.html'
