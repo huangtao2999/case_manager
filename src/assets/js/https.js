@@ -11,6 +11,8 @@ let https = axios
 https.jsonp = (url, options) => {
   let queryString = ''
 
+  options = options || {}
+
   const token = localStorage.getItem(config.tokenKey)
   // token 不存在 且 不是登录页发出的请求
   if (!token && !/\/login.html$/.test(window.location.href)) {
@@ -63,7 +65,7 @@ https.jsonp = (url, options) => {
   return promise
 }
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === config.env) {
   https.jsonp = https.get
 }
 

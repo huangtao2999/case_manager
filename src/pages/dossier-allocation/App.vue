@@ -37,7 +37,7 @@
 import IframeContainer from 'components/common/iframe-container'
 import DswPanel from 'components/common/panel'
 import DswPagination from 'components/common/pagination'
-import DswTable from 'components/function/easy-table'
+import DswTable from 'components/function/table'
 
 export default {
   name: 'App',

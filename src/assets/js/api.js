@@ -6,7 +6,9 @@ Object.defineProperty(Vue.prototype, '$api', {
   enumerable: false,
   get () {
     return {
-      login: 'LoginRpc/login.json'
+      login: 'LoginRpc/login.json',
+      getLoginMenu: 'Menu/getMenuTreeForIndex.json',
+      getUserInfo: 'User/getUserInfo.json'
     }
   }
 })
