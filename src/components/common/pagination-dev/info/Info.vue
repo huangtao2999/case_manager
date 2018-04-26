@@ -1,10 +1,10 @@
 <template>
-
+  <span class="dsw-pagination-info">{{totalRecords}}</span>
 </template>
 
 <script>
 export default {
-  name: 'Demo'
+  name: 'Info'
 }
 </script>
 
