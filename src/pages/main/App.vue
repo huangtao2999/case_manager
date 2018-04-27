@@ -59,9 +59,9 @@ export default {
           formatter: '{b}: {c} ({d}%)'
         },
         legend: {
-          align: 'right',
+          align: 'left',
+          right: 20,
           bottom: 20,
-          x: 'right',
           textStyle: {
             color: '#fff'
           },
@@ -70,7 +70,7 @@ export default {
         calculable: true,
         series: [
           {
-            name: '访问来源',
+            name: '案卷数据',
             type: 'pie',
             center: ['50%', '50%'],
             label: {
@@ -89,16 +89,24 @@ export default {
       },
       caseTrendenyOptions: {
         tooltip: {
-          trigger: 'axis'
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross'
+          }
         },
         legend: {
+          right: 10,
+          top: 10,
+          textStyle: {
+            color: '#fff'
+          },
           data: ['全部', '在办', '已结', '未破']
         },
         calculable: true,
         xAxis: [
           {
             type: 'category',
-            data: ['2018-04-26', '2018-04-26', '2018-04-26', '2018-04-26', '2018-04-26', '2018-04-26', '2018-04-26']
+            data: ['2018-04-26', '2018-04-27', '2018-04-28', '2018-04-29', '2018-04-30', '2018-05-01', '2018-05-02']
           }
         ],
         yAxis: [

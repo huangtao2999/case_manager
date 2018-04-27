@@ -2,11 +2,9 @@
   <div class="dsw-panel panel" ref="dsw-panel">
     <span class="dsw-panel-refresh" v-if="isShowRefresh" @click.stop="refreshHandler" title="刷新当前页面"><i class="fa fa-refresh dsw-panel-refresh-icon"></i></span>
 
-    <div class="panel-heading" v-if="isShowHeading" ref="panel-heading">
+    <div class="dsw-panel-heading panel-heading" v-if="isShowHeading" ref="panel-heading">
       <slot name="panel-heading">
-        <div class="panel-title">
-          <span class="dsw-panel-title">黄石市公安局</span><cascade-select></cascade-select>
-        </div>
+        <h1 class="panel-title">黄石市公安局</h1>
       </slot>
     </div>
 
@@ -19,8 +17,6 @@
 </template>
 
 <script>
-
-import CascadeSelect from 'components/common/cascade-select'
 
 export default {
   name: 'Panel',
@@ -38,21 +34,11 @@ export default {
       default: false
     }
   },
-  components: {
-    CascadeSelect
-  },
-  beforeMount () {
-    console.log(this)
+  created () {
     this.$nextTick(() => {
       this.adjustHeight()
       window.addEventListener('resize', this.adjustHeight)
     })
-  },
-  mounted () {
-    // this.$nextTick(() => {
-    //   this.adjustHeight()
-    //   window.addEventListener('resize', this.adjustHeight)
-    // })
   },
   methods: {
     refreshHandler (e) {
@@ -68,7 +54,7 @@ export default {
       const panelHeadingHeight = panelHeading ? panelHeading.clientHeight : 0
       const panelFooterHeight = panelFooter ? panelFooter.clientHeight : 0
 
-      console.log(panelHeight + '===' + panelHeadingHeight + '===' + panelFooterHeight)
+      // console.log(panelHeight + '===' + panelHeadingHeight + '===' + panelFooterHeight)
 
       panelBody.style.height = (panelHeight - panelHeadingHeight - panelFooterHeight) + 'px'
     }
@@ -90,6 +76,9 @@ export default {
     right: 10px;
     font-size: 16px;
     cursor: pointer;
+  }
+  .dsw-panel-heading{
+    background : url("./images/panel-heading-bg.png") no-repeat scroll 0 0/100% 100%;
   }
 }
 </style>
