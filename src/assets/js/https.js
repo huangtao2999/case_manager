@@ -5,6 +5,9 @@ import jsonp from 'jsonp'
 import config from './config'
 import axios from './axios'
 import toastr from './toastr'
+import Token from './Token'
+
+const token = new Token(config.tokenKey)
 
 let https = axios
 
@@ -13,14 +16,12 @@ https.jsonp = (url, options) => {
 
   options = options || {}
 
-  const token = localStorage.getItem(config.tokenKey)
-  // token 不存在 且 不是登录页发出的请求
-  if (!token && !/\/login.html$/.test(window.location.href)) {
-    window.location.href = '/login.html'
-    return false
-  } else if (token) {
+  const _token = token.getToken()
+  if (_token) {
     options.params = options.params || {}
-    options.params[config.tokenName] = token
+    options.params[config.tokenName] = _token
+  } else if (!/\/login.html$/.test(window.location.href)) {
+    return Promise.reject(new Error('请先登录'))
   }
 
   // 处理 url
@@ -41,7 +42,7 @@ https.jsonp = (url, options) => {
     url += ('?' + queryString.substr(1))
   }
 
-  const promise = new Promise((resolve, reject) => {
+  let promise = new Promise((resolve, reject) => {
     // eslint-disable-next-line
     const cancel = jsonp(url, {
       prefix: options.prefix, // 前缀
@@ -57,7 +58,7 @@ https.jsonp = (url, options) => {
     })
   })
 
-  promise.catch(reason => {
+  promise = promise.catch(reason => {
     toastr.error('JSONP Request Error')
     return Promise.reject(reason)
   })

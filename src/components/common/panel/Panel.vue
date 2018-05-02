@@ -8,9 +8,7 @@
       </slot>
     </div>
 
-    <div class="panel-body dsw-panel-body" ref="panel-body" style="height: 100%;">
-      <slot></slot>
-    </div>
+    <div class="panel-body dsw-panel-body" ref="panel-body"><slot></slot></div>
 
     <div class="panel-footer dsw-panel-footer" v-if="isShowFooter" ref="panel-footer"><slot name="panel-footer"></slot></div>
   </div>
@@ -46,7 +44,7 @@ export default {
   },
   methods: {
     refreshHandler (e) {
-      this.$emit('dswPanelRefresh', {e})
+      this.$emit('dsw-panel-refresh', {e})
     },
     adjustHeight () {
       const panel = this.$refs['dsw-panel']
@@ -71,8 +69,12 @@ export default {
 <style lang="stylus">
 .dsw-panel{
   position : relative;
-  width :100%;
-  height : 100%;
+  width : 100%;
+  /*min-width : 100%;*/
+  max-width : 100%;
+  height :100%;
+  min-height :100%;
+  /*max-height : 100%;*/
   overflow : hidden;
   border : none;
   margin :0;
@@ -85,13 +87,17 @@ export default {
     cursor: pointer;
   }
   .dsw-panel-heading{
-    background : url("./images/panel-heading-bg.png") no-repeat scroll 0 0/100% 100%;
+    width :100%;
     overflow : hidden;
+    background : url("./images/panel-heading-bg.png") no-repeat scroll 0 0/100% 100%;
   }
   .dsw-panel-body{
+    width :100%;
+    /*height : 100%;*/
     overflow : hidden;
   }
   .dsw-panel-footer{
+    width :100%;
     overflow : hidden;
   }
 }

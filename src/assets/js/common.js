@@ -1,4 +1,5 @@
 
+import './polyfill'
 import './api'
-import './layer'
+import './vLayer'
 import './toastr'
