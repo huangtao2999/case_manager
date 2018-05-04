@@ -28,7 +28,7 @@
 
                 <dsw-table style="width: 100%;" :isl-loading-for-table="isLoadingForTable" :tableData="tableData[dossier.type]" :columns="columns" :columnWidthDrag="true" :pagingIndex="0" :row-click="rowClickHandler" @dsw-custom-component='customComponentHandler' :row-hover-color="'rgb(25, 45, 84)'"></dsw-table>
 
-                <button class="dsw-btn" slot="panel-footer">预览该卷</button>
+                <button class="dsw-btn" slot="panel-footer" @click.stop="previewHandler($event,dossier.type)">预览该卷</button>
               </dsw-panel>
             </div>
           </li>
@@ -51,6 +51,7 @@ import DswPagination from 'components/common/pagination'
 
 import DswEdit from './Edit'
 import DswScan from './Scan'
+import DswPreview from './Preview'
 
 import Vue from 'vue'
 import DswOperation from './Operation'
@@ -65,7 +66,8 @@ export default {
       isLoadingForTable: false,
       listsData: [],
       tableData: {},
-      columns: []
+      columns: [],
+      scanIndex: 0
     }
   },
   watch: {
@@ -162,15 +164,20 @@ export default {
             taskBelong: rowData.type
           })
         } else {
-          this.$vLayer.openPage(DswScan, {}, {
-            parent: this
+          this.scanIndex = this.$vLayer.openPage(DswScan, {}, {
+            parent: this,
+            taskId: this.extraParams.id,
+            taskBelong: rowData.type
           }, {
-            area: ['400px', '240px']
+            area: ['450px', '240px']
           })
         }
       } else {
         this.$toastr.warning('请选择卷宗类目')
       }
+    },
+    previewHandler (e, type) {
+      this.$vLayer.openPage(DswPreview)
     }
   }
 }
