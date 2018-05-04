@@ -17,7 +17,8 @@ Object.defineProperty(Vue.prototype, '$api', {
       getCurrentUserInfo: 'User/getCurrentUser.json',
       getLog: 'Log/queryPage.json',
       getDossierLists: 'CaseHeaderRpc/list.json',
-      getDossierInfo: 'CaseHeaderRpc/detail.json'
+      getDossierInfo: 'CaseHeaderRpc/detail.json',
+      getBorrowListByPage: 'CaseBorrowRpc/listBorrow.json'
     }
   }
 })
