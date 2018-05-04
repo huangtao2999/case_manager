@@ -23,7 +23,6 @@
 
 <script>
 import BScroll from 'better-scroll'
-import {Uploader} from 'assets/js/web-uploader'
 
 import DialogContainer from 'components/common/dialog-container'
 import DswPanel from 'components/common/panel'
@@ -57,12 +56,6 @@ export default {
       })
     }).catch((reason) => {
       this.$toastr.error('获取附件列表失败')
-    })
-
-    this.uploader = new Uploader({
-      pick: {
-        id: '#dsw-select-btn'
-      }
     })
   },
   updated () {

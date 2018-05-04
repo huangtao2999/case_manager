@@ -22,7 +22,11 @@ Object.defineProperty(Vue.prototype, '$api', {
       getBorrowListByPage: 'CaseBorrowRpc/listBorrow.json',
       getDossierSubLists: 'CaseHeaderRpc/listFirstElecArchVo.json',
       getDossierGrandsonLists: 'CaseHeaderRpc/listSecondElecArchVo.json',
-      getAttachmentLists: 'FileUpload/listAttach.json'
+      getAttachmentLists: 'FileUpload/listAttach.json',
+      getWarnListByPage: 'WarnRpc/getCaseListByWarningTypeId.json',
+      getBorrowAuditListByPage: 'CaseBorrowRpc/listAudit.json',
+      getCaseRuleCfgListByPage: 'RuleRpc/getRuleListByPage.json',
+      getRoleListByPage: 'Role/queryPage.json'
     }
   }
 })
