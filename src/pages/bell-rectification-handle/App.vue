@@ -39,8 +39,11 @@ export default {
         pageSize: 20
       },
       dictionary: {
-        'LOG_OPT_MODULE': {},
-        'LOG_OPT_TYPE': {}
+        'CASE_CORRECT_QUESTION_LEVEL': {
+          '01': '紧急',
+          '02': '重要',
+          '03': '一般'
+        }
       },
       moduleFilters: [],
       typeFilters: [],
@@ -116,24 +119,10 @@ export default {
           overflowTitle: true
         },
         {
-          title: '操作模块',
-          field: 'module',
+          title: '优先级',
+          field: 'level',
           formatter: (rowData, rowIndex, pagingIndex, field) => {
-            // 箭头函数 this 指向 vm；普通函数 this 指向 该列的选项
-            return this.dictionary['LOG_OPT_MODULE'][rowData[field]]
-          },
-          filters: this.moduleFilters,
-          width: 100,
-          titleAlign: 'center',
-          columnAlign: 'center',
-          isResize: true,
-          overflowTitle: true
-        },
-        {
-          title: '操作类型',
-          field: 'type',
-          formatter: (rowData, rowIndex, pagingIndex, field) => {
-            return this.dictionary['LOG_OPT_TYPE'][rowData[field]]
+            return this.dictionary['CASE_CORRECT_QUESTION_LEVEL'][rowData[field]]
           },
           filters: this.typeFilters,
           width: 260,
@@ -142,9 +131,25 @@ export default {
           isResize: true,
           overflowTitle: true
         },
-        {title: 'IP', field: 'ip', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
-        {title: '操作内容', field: 'content', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
-        {title: '操作时间', field: 'updateTime', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true}
+        {title: '案件编号', field: 'caseNo', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
+        {title: '案件名称', field: 'caseName', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
+        {title: '整改内容', field: 'content', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
+        {title: '提出内容', field: 'createOrgName', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
+        {title: '提出人', field: 'brectifiedUserName', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
+        {title: '提出时间', field: 'startDate', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
+        {title: '整改截止时间', field: 'endTime', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
+        {
+          title: '操作',
+          field: 'status',
+          formatter: (rowData, rowIndex, pagingIndex, field) => {
+            return '<a href="javascript:void(0);" class="dsw-rectification-handle-operation">详情</a>'
+          },
+          width: 100,
+          titleAlign: 'center',
+          columnAlign: 'center',
+          isResize: true,
+          overflowTitle: false
+        }
       ]
     },
     searchHandler (e) {
