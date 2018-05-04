@@ -1,21 +1,9 @@
 <template >
   <iframe-container :isShowHeading="false">
     <dsw-panel class="dsw-right-content-wrapper" :isShowFooter="true">
-      <div slot="panel-heading" class="dsw-search-wrapper">
-        <form class="form-inline" @keydown.stop.prevent.enter="searchHandler">
-          <div class="form-group">
-            <label class="control-label" >内容</label >
-            <input type="text" name="content" v-model="content" class="form-control" />
-          </div>
-          <div class="form-group">
-            <search-btn @dsw-click-btn="searchHandler"></search-btn>
-          </div>
-        </form >
-      </div>
+      <dsw-table style="width: 100%;" :isLoadingForTable="isLoadingForTable" :tableData="tableData" :columns="columns" :columnWidthDrag="true" :pagingIndex="paginateInfo.pageSize*(paginateInfo.currentPage-1)"></dsw-table>
 
-      <dsw-table style="width: 100%;" @dsw-filter-method="filterMethodHandler" :isLoadingForTable="isLoadingForTable" :tableData="tableData" :columns="columns" :columnWidthDrag="true" :pagingIndex="paginateInfo.pageSize*(paginateInfo.currentPage-1)"></dsw-table>
-
-      <dsw-pagination slot="panel-footer" :currentPage="paginateInfo.currentPage" :totalRecords="paginateInfo.total" :recordsPerPage="paginateInfo.pageSize" @dsw-pager-change="getLogs"></dsw-pagination>
+      <dsw-pagination slot="panel-footer" :currentPage="paginateInfo.currentPage" :totalRecords="paginateInfo.total" :recordsPerPage="paginateInfo.pageSize" @dsw-pager-change="getRoleListByPage"></dsw-pagination>
     </dsw-panel>
   </iframe-container>
 </template >
@@ -38,14 +26,7 @@ export default {
         currentPage: 1,
         pageSize: 20
       },
-      dictionary: {
-        'LOG_OPT_MODULE': {},
-        'LOG_OPT_TYPE': {}
-      },
-      moduleFilters: [],
-      typeFilters: [],
-      module: '',
-      type: '',
+      dictionary: {},
       content: ''
     }
   },
@@ -57,43 +38,19 @@ export default {
     SearchBtn
   },
   created () {
-    // 获取字典 并且 设置过滤器
-    const modulePromise = this.getDictionary('LOG_OPT_MODULE', 4).then((result) => {
-      this.setFilters('moduleFilters', 'LOG_OPT_MODULE')
-    })
-    const typePromise = this.getDictionary('LOG_OPT_TYPE', 1).then((result) => {
-      this.setFilters('typeFilters', 'LOG_OPT_TYPE')
-    })
     // 获取表格数据 并且 设置显示列
-    Promise.all([modulePromise, typePromise]).then((result) => {
-      this.getLogs()
+    Promise.all([]).then((result) => {
+      this.getRoleDataByPage()
       this.setColumns()
     })
   },
   methods: {
-    getDictionary (type, code) {
-      return this.$https.jsonp(this.$api.getDictionary, {params: {type, code}}).then((result) => {
-        result.data.lists.forEach((val) => {
-          this.dictionary[type][val.code] = val.name
-        })
-      })
-    },
-    setFilters (filterName, filterType) {
-      const _filterType = this.dictionary[filterType]
-
-      for (let k in _filterType) {
-        let filter = {label: _filterType[k], value: k}
-        this[filterName].push(filter)
-      }
-    },
-    getLogs ({pageIndex, recordsPerPage} = {pageIndex: this.paginateInfo.currentPage, recordsPerPage: this.paginateInfo.pageSize}) {
-      const module = this.module
-      const type = this.type
-      const content = this.content
+    getRoleDataByPage ({pageIndex, recordsPerPage} = {pageIndex: this.paginateInfo.currentPage, recordsPerPage: this.paginateInfo.pageSize}) {
+      const roleName = this.content
 
       this.isLoadingForTable = true
 
-      this.$https.jsonp(this.$api.getLog, {params: {page: pageIndex, limit: recordsPerPage, module, type, content}}).then((result) => {
+      this.$https.jsonp(this.$api.getRoleListByPage, {params: {page: pageIndex, limit: recordsPerPage, roleName}}).then((result) => {
         this.tableData = result.data.lists
         this.paginateInfo = result.data.pageDto
         this.isLoadingForTable = false
@@ -115,50 +72,20 @@ export default {
           isResize: true,
           overflowTitle: true
         },
+        {title: '角色名', field: 'roleName', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
+        {title: '描述备注', field: 'remark', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
         {
-          title: '操作模块',
-          field: 'module',
+          title: '操作',
           formatter: (rowData, rowIndex, pagingIndex, field) => {
-            // 箭头函数 this 指向 vm；普通函数 this 指向 该列的选项
-            return this.dictionary['LOG_OPT_MODULE'][rowData[field]]
+            return 1
           },
-          filters: this.moduleFilters,
           width: 100,
           titleAlign: 'center',
           columnAlign: 'center',
           isResize: true,
           overflowTitle: true
-        },
-        {
-          title: '操作类型',
-          field: 'type',
-          formatter: (rowData, rowIndex, pagingIndex, field) => {
-            return this.dictionary['LOG_OPT_TYPE'][rowData[field]]
-          },
-          filters: this.typeFilters,
-          width: 260,
-          titleAlign: 'center',
-          columnAlign: 'center',
-          isResize: true,
-          overflowTitle: true
-        },
-        {title: 'IP', field: 'ip', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
-        {title: '操作内容', field: 'content', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
-        {title: '操作时间', field: 'updateTime', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true}
+        }
       ]
-    },
-    searchHandler (e) {
-      this.getLogs()
-    },
-    filterMethodHandler (filters) {
-      if (filters['module'] && this.module !== filters['module'][0]) {
-        this.module = filters['module'][0]
-        this.getLogs()
-      }
-      if (filters['type'] && this.type !== filters['type'][0]) {
-        this.type = filters['type'][0]
-        this.getLogs()
-      }
     }
   }
 }

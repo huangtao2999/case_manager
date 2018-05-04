@@ -119,6 +119,9 @@ export default {
         {
           title: '借阅状态',
           field: 'status',
+          formatter: (rowData, rowIndex, pagingIndex, field) => {
+            return this.dictionary['CASE_BORROW_STATUS'][rowData[field]]
+          },
           filters: this.borrowStatusFilters,
           width: 100,
           titleAlign: 'center',
@@ -172,12 +175,8 @@ export default {
       this.getBorrowDataByPage()
     },
     filterMethodHandler (filters) {
-      if (filters['status'] && this.status !== filters['status'][0]) {
-        this.status = filters['status'][0]
-        this.getBorrowDataByPage()
-      }
-      if (filters['status'] == null) {
-        this.status = ''
+      if ((filters['status'] && this.status !== filters['status'][0]) || (filters['status'] === null && this.status)) {
+        this.status = filters['status'] ? filters['status'][0] : ''
         this.getBorrowDataByPage()
       }
     }

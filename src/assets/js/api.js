@@ -26,7 +26,11 @@ Object.defineProperty(Vue.prototype, '$api', {
       getRectificationHandle: 'CaseCorrectQuestionRpc/list.json',
       getRectificationConfirm: 'CaseCorrectQuestionRpc/listByConfirm.json',
       getDossierTransform: 'CaseTransferRpc/list.json',
-      getBellTransform: 'CaseTransferRpc/verifyList.json'
+      getBellTransform: 'CaseTransferRpc/verifyList.json',
+      getWarnListByPage: 'WarnRpc/getCaseListByWarningTypeId.json',
+      getBorrowAuditListByPage: 'CaseBorrowRpc/listAudit.json',
+      getCaseRuleCfgListByPage: 'RuleRpc/getRuleListByPage.json',
+      getRoleListByPage: 'Role/queryPage.json'
     }
   }
 })
