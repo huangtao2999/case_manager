@@ -1,10 +1,13 @@
 <template >
-  <iframe-container :isShowHeading="false">
+  <iframe-container :isShowHeading="false" :isShowFooter="true">
     <dsw-panel class="dsw-right-content-wrapper" :isShowFooter="true">
-      <dsw-table style="width: 100%;" @dsw-filter-method="filterMethodHandler" :isLoadingForTable="isLoadingForTable" :tableData="tableData" :columns="columns" :columnWidthDrag="true" :pagingIndex="paginateInfo.pageSize*(paginateInfo.currentPage-1)"></dsw-table>
+      <dsw-table style="width: 100%;" @dsw-filter-method="filterMethodHandler" :isLoadingForTable="isLoadingForTable" :tableData="tableData" :columns="columns" :columnWidthDrag="true" :pagingIndex="paginateInfo.pageSize*(paginateInfo.currentPage-1)" @dsw-custom-component='customComponentHandler'></dsw-table>
 
       <dsw-pagination slot="panel-footer" :currentPage="paginateInfo.currentPage" :totalRecords="paginateInfo.total" :recordsPerPage="paginateInfo.pageSize" @dsw-pager-change="getRuleCfgDataByPage"></dsw-pagination>
     </dsw-panel>
+    <div class="dsw-dossier-lists-btn-wrapper" slot="panel-footer">
+      <button class="dsw-btn dsw-add-btn" @click.stop="addHandler">新建</button>
+    </div>
   </iframe-container>
 </template >
 
@@ -14,6 +17,14 @@ import DswPanel from 'components/common/panel'
 import DswPagination from 'components/common/pagination'
 import DswTable from 'components/common/table'
 import SearchBtn from 'components/common/search-btn'
+
+import DswEdit from './Edit'
+import DswHidden from './Hidden'
+import DswAdd from './Add'
+
+import Vue from 'vue'
+import DswOperation from './Operation'
+Vue.component('dsw-operation', DswOperation)
 
 export default {
   name: 'App',
@@ -172,9 +183,7 @@ export default {
         {title: '投屏描述', field: 'showDesc', width: 160, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
         {
           title: '操作',
-          formatter: (rowData, rowIndex, pagingIndex, field) => {
-            return 1
-          },
+          componentName: 'dsw-operation',
           width: 100,
           titleAlign: 'center',
           columnAlign: 'center',
@@ -191,6 +200,31 @@ export default {
       if ((filters['bizType'] && this.bizTypeStatus !== filters['bizType'][0]) || (filters['bizType'] === null && this.bizTypeStatus)) {
         this.bizTypeStatus = filters['bizType'] ? filters['bizType'][0] : ''
         this.getRuleCfgDataByPage()
+      }
+    },
+    addHandler (e) {
+      this.$vLayer.openPage(DswAdd, {}, {
+        parent: this,
+        title: '新增'
+      })
+    },
+    customComponentHandler ({type, index, rowData}) {
+      if (rowData) {
+        if (type === 'edit') {
+          this.$vLayer.openPage(DswEdit, {}, {
+            parent: this,
+            title: '预览编辑',
+            ruleId: rowData.id
+          })
+        } else {
+          this.$vLayer.openPage(DswHidden, {}, {
+            parent: this
+          }, {
+            area: ['400px', '240px']
+          })
+        }
+      } else {
+        this.$toastr.warning('请选择操作栏选择相对应的按钮！')
       }
     }
   }

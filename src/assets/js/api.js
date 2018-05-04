@@ -26,7 +26,9 @@ Object.defineProperty(Vue.prototype, '$api', {
       getWarnListByPage: 'WarnRpc/getCaseListByWarningTypeId.json',
       getBorrowAuditListByPage: 'CaseBorrowRpc/listAudit.json',
       getCaseRuleCfgListByPage: 'RuleRpc/getRuleListByPage.json',
-      getRoleListByPage: 'Role/queryPage.json'
+      getRoleListByPage: 'Role/queryPage.json',
+      getRuleDetailById: 'RuleRpc/getRuleDetailById.json',
+      getRoleDetailById: 'Role/findRoleDetailByRoleId.json'
     }
   }
 })
