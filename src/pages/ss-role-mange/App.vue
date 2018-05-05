@@ -1,15 +1,22 @@
 <template >
-  <iframe-container :isShowHeading="false" :isShowFooter="true">
+  <iframe-container :isShowHeading="false">
     <dsw-panel class="dsw-right-content-wrapper" :isShowFooter="true">
-      <dsw-table style="width: 100%;" :isLoadingForTable="isLoadingForTable" :tableData="tableData" :columns="columns" :columnWidthDrag="true" :pagingIndex="paginateInfo.pageSize*(paginateInfo.currentPage-1)"
-                 @dsw-custom-component='customComponentHandler'></dsw-table>
+      <div slot="panel-heading" class="dsw-search-wrapper">
+        <form class="form-inline" @keydown.stop.prevent.enter="searchHandler">
+          <div class="form-group">
+            <label class="control-label" >内容</label >
+            <input type="text" name="content" v-model="content" class="form-control" />
+          </div>
+          <div class="form-group">
+            <search-btn @dsw-click-btn="searchHandler"></search-btn>
+          </div>
+        </form >
+      </div>
 
-      <dsw-pagination slot="panel-footer" :currentPage="paginateInfo.currentPage" :totalRecords="paginateInfo.total" :recordsPerPage="paginateInfo.pageSize" @dsw-pager-change="getRoleListByPage"></dsw-pagination>
+      <dsw-table style="width: 100%;" @dsw-filter-method="filterMethodHandler" :isLoadingForTable="isLoadingForTable" :tableData="tableData" :columns="columns" :columnWidthDrag="true" :pagingIndex="paginateInfo.pageSize*(paginateInfo.currentPage-1)"></dsw-table>
+
+      <dsw-pagination slot="panel-footer" :currentPage="paginateInfo.currentPage" :totalRecords="paginateInfo.total" :recordsPerPage="paginateInfo.pageSize" @dsw-pager-change="getLogs"></dsw-pagination>
     </dsw-panel>
-
-    <div class="dsw-dossier-lists-btn-wrapper" slot="panel-footer">
-      <button class="dsw-btn dsw-add-btn" @click.stop="addHandler">新建</button>
-    </div>
   </iframe-container>
 </template >
 
@@ -19,14 +26,6 @@ import DswPanel from 'components/common/panel'
 import DswPagination from 'components/common/pagination'
 import DswTable from 'components/common/table'
 import SearchBtn from 'components/common/search-btn'
-
-import DswAddRole from './Add'
-import DswEdit from './Edit'
-import DswHidden from './Hidden'
-
-import Vue from 'vue'
-import DswOperation from './Operation'
-Vue.component('dsw-operation', DswOperation)
 
 export default {
   name: 'App',
@@ -39,7 +38,14 @@ export default {
         currentPage: 1,
         pageSize: 20
       },
-      dictionary: {},
+      dictionary: {
+        'LOG_OPT_MODULE': {},
+        'LOG_OPT_TYPE': {}
+      },
+      moduleFilters: [],
+      typeFilters: [],
+      module: '',
+      type: '',
       content: ''
     }
   },
@@ -51,24 +57,48 @@ export default {
     SearchBtn
   },
   created () {
+    // 获取字典 并且 设置过滤器
+    const modulePromise = this.getDictionary('LOG_OPT_MODULE', 4).then((result) => {
+      this.setFilters('moduleFilters', 'LOG_OPT_MODULE')
+    })
+    const typePromise = this.getDictionary('LOG_OPT_TYPE', 1).then((result) => {
+      this.setFilters('typeFilters', 'LOG_OPT_TYPE')
+    })
     // 获取表格数据 并且 设置显示列
-    Promise.all([]).then((result) => {
-      this.getRoleDataByPage()
+    Promise.all([modulePromise, typePromise]).then((result) => {
+      this.getLogs()
       this.setColumns()
     })
   },
   methods: {
-    getRoleDataByPage ({pageIndex, recordsPerPage} = {pageIndex: this.paginateInfo.currentPage, recordsPerPage: this.paginateInfo.pageSize}) {
-      const roleName = this.content
+    getDictionary (type, code) {
+      return this.$https.jsonp(this.$api.getDictionary, {params: {type, code}}).then((result) => {
+        result.data.lists.forEach((val) => {
+          this.dictionary[type][val.code] = val.name
+        })
+      })
+    },
+    setFilters (filterName, filterType) {
+      const _filterType = this.dictionary[filterType]
+
+      for (let k in _filterType) {
+        let filter = {label: _filterType[k], value: k}
+        this[filterName].push(filter)
+      }
+    },
+    getLogs ({pageIndex, recordsPerPage} = {pageIndex: this.paginateInfo.currentPage, recordsPerPage: this.paginateInfo.pageSize}) {
+      const module = this.module
+      const type = this.type
+      const content = this.content
 
       this.isLoadingForTable = true
 
-      this.$https.jsonp(this.$api.getRoleListByPage, {params: {page: pageIndex, limit: recordsPerPage, roleName}}).then((result) => {
+      this.$https.jsonp(this.$api.getLog, {params: {page: pageIndex, limit: recordsPerPage, module, type, content}}).then((result) => {
         this.tableData = result.data.lists
         this.paginateInfo = result.data.pageDto
         this.isLoadingForTable = false
       }).catch((reason) => {
-        this.$toastr.error('获取角色列表失败')
+        this.$toastr.error('获取日志列表失败')
         this.isLoadingForTable = false
       })
     },
@@ -85,42 +115,49 @@ export default {
           isResize: true,
           overflowTitle: true
         },
-        {title: '角色名', field: 'roleName', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
-        {title: '描述备注', field: 'remark', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
         {
-          title: '操作',
-          componentName: 'dsw-operation',
+          title: '操作模块',
+          field: 'module',
+          formatter: (rowData, rowIndex, pagingIndex, field) => {
+            // 箭头函数 this 指向 vm；普通函数 this 指向 该列的选项
+            return this.dictionary['LOG_OPT_MODULE'][rowData[field]]
+          },
+          filters: this.moduleFilters,
           width: 100,
           titleAlign: 'center',
           columnAlign: 'center',
           isResize: true,
           overflowTitle: true
-        }
+        },
+        {
+          title: '操作类型',
+          field: 'type',
+          formatter: (rowData, rowIndex, pagingIndex, field) => {
+            return this.dictionary['LOG_OPT_TYPE'][rowData[field]]
+          },
+          filters: this.typeFilters,
+          width: 260,
+          titleAlign: 'center',
+          columnAlign: 'center',
+          isResize: true,
+          overflowTitle: true
+        },
+        {title: 'IP', field: 'ip', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
+        {title: '操作内容', field: 'content', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
+        {title: '操作时间', field: 'updateTime', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true}
       ]
     },
-    addHandler (e) {
-      this.$vLayer.openPage(DswAddRole, {}, {
-        parent: this,
-        title: '新增'
-      })
+    searchHandler (e) {
+      this.getLogs()
     },
-    customComponentHandler ({type, index, rowData}) {
-      if (rowData) {
-        if (type === 'edit') {
-          this.$vLayer.openPage(DswEdit, {}, {
-            parent: this,
-            title: '预览编辑',
-            roleId: rowData.id
-          })
-        } else {
-          this.$vLayer.openPage(DswHidden, {}, {
-            parent: this
-          }, {
-            area: ['400px', '240px']
-          })
-        }
-      } else {
-        this.$toastr.warning('请选择操作栏选择相对应的按钮！')
+    filterMethodHandler (filters) {
+      if (filters['module'] && this.module !== filters['module'][0]) {
+        this.module = filters['module'][0]
+        this.getLogs()
+      }
+      if (filters['type'] && this.type !== filters['type'][0]) {
+        this.type = filters['type'][0]
+        this.getLogs()
       }
     }
   }

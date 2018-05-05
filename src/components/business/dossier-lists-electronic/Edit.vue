@@ -93,8 +93,6 @@ export default {
           }
         })
       })
-    }).catch((reason) => {
-      this.$toastr.error('获取附件列表失败')
     })
   },
   updated () {
