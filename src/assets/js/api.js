@@ -22,7 +22,19 @@ Object.defineProperty(Vue.prototype, '$api', {
       getDossierInfo: 'CaseHeaderRpc/detail.json',
       getDossierSubLists: 'CaseHeaderRpc/listFirstElecArchVo.json',
       getDossierGrandsonLists: 'CaseHeaderRpc/listSecondElecArchVo.json',
-      getAttachmentLists: 'FileUpload/listAttach.json'
+      getAttachmentLists: 'FileUpload/listAttach.json',
+      getRectificationHandle: 'CaseCorrectQuestionRpc/list.json',
+      getRectificationConfirm: 'CaseCorrectQuestionRpc/listByConfirm.json',
+      getDossierTransform: 'CaseTransferRpc/list.json',
+      getBellTransform: 'CaseTransferRpc/verifyList.json',
+      getWarnListByPage: 'WarnRpc/getCaseListByWarningTypeId.json',
+      getBorrowAuditListByPage: 'CaseBorrowRpc/listAudit.json',
+      getCaseRuleCfgListByPage: 'RuleRpc/getRuleListByPage.json',
+      getRoleListByPage: 'Role/queryPage.json',
+      getRuleDetailById: 'RuleRpc/getRuleDetailById.json',
+      getRoleDetailById: 'Role/findRoleDetailByRoleId.json',
+      saveRole: 'Role/saveRole.json',
+      getDossierCabinetUsage: 'RoomRpc/listCellOperationLog.json'
     }
   }
 })
