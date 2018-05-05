@@ -10,7 +10,8 @@ Object.defineProperty(Vue.prototype, '$api', {
     return {
       baseUrl: https.defaults.baseURL,
       getAttachment: 'FileUpload/getAttach.json',
-      uploadAttachment: '',
+      uploadAttachment: 'FileUpload/upload.json',
+      uploadBase64: 'FileUpload/uploadBase64.json',
       getDictionary: 'Dictionary/queryTableListByType.json',
       login: 'LoginRpc/login.json',
       getLoginMenu: 'Menu/getMenuTreeForIndex.json',
@@ -33,7 +34,8 @@ Object.defineProperty(Vue.prototype, '$api', {
       getRoleListByPage: 'Role/queryPage.json',
       getRuleDetailById: 'RuleRpc/getRuleDetailById.json',
       getRoleDetailById: 'Role/findRoleDetailByRoleId.json',
-      saveRole: 'Role/saveRole.json'
+      saveRole: 'Role/saveRole.json',
+      getDossierCabinetUsage: 'RoomRpc/listCellOperationLog.json'
     }
   }
 })
