@@ -32,7 +32,8 @@ Object.defineProperty(Vue.prototype, '$api', {
       getCaseRuleCfgListByPage: 'RuleRpc/getRuleListByPage.json',
       getRoleListByPage: 'Role/queryPage.json',
       getRuleDetailById: 'RuleRpc/getRuleDetailById.json',
-      getRoleDetailById: 'Role/findRoleDetailByRoleId.json'
+      getRoleDetailById: 'Role/findRoleDetailByRoleId.json',
+      saveRole: 'Role/saveRole.json'
     }
   }
 })
