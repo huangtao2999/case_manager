@@ -5,13 +5,13 @@
         <div class="form-group form-group-sm">
           <label class="control-label col-sm-3 dsw-required" >角色名称：</label>
           <div class="col-sm-9">
-            <input type="text" class="form-control" name="caseNo" v-model="caseName" />
+            <input type="text" class="form-control" name="roleName" v-model="role.roleName" />
           </div>
         </div>
         <div class="form-group form-group-sm">
           <label class="control-label col-sm-3 dsw-required" >角色描述：</label>
           <div class="col-sm-9">
-            <textarea name="remark" class="form-control" rows="3" v-model="remark" ></textarea >
+            <textarea name="remark" class="form-control" rows="3" v-model="role.remark" ></textarea >
           </div>
         </div>
         <div class="form-group form-group-sm">
@@ -24,7 +24,7 @@
           </div>
         </div>
         <div class="form-group form-group-sm">
-          <button type="submit" class="btn btn-primary"  @click="send">Submit</button>
+          <button type="button" class="btn btn-primary"  @click="send">Submit</button>
         </div>
       </form >
     </div>
@@ -68,8 +68,10 @@ export default {
         pid: 14
       }],
       arr: [],
-      caseName: '',
-      remark: ''
+      role: {
+        roleName: '',
+        remark: ''
+      }
     }
   },
   components: {
@@ -91,18 +93,18 @@ export default {
 
       // 发送ajax请求
       const menuIds = this.arr
-      const roleName = this.caseName
-      const remark = this.remark
-      debugger
-      // console.log(menuIds.length)
-      this.$https.post(this.$api.saveRole, {menuIds, roleName, remark}).then((result) => {
-        this.tableData = result.data.lists
-        this.paginateInfo = result.data.pageDto
-        this.isLoadingForTable = false
-      }).catch((reason) => {
-        this.$toastr.error('新增角色失败')
-        this.isLoadingForTable = false
-      })
+      const roleName = this.role.roleName
+      const param = this.role
+      param.menuIds = menuIds
+      if (roleName !== '') {
+        this.$https.post(this.$api.saveRole, param).then((result) => {
+          if (!result.code) {
+            this.$layer.close(this.extraParams.parent.addIndex)
+          }
+        }).catch((reason) => {
+          this.$toastr.error('新增角色失败')
+        })
+      }
     }
   },
   computed: {

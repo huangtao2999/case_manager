@@ -27,6 +27,7 @@ export default {
   name: 'Edit',
   data () {
     return {
+      items: [],
       info: {}
     }
   },
@@ -35,8 +36,18 @@ export default {
   },
   beforeMount () {
     this.getInfo()
+    this.getMenuSelectedListByRoleId()
   },
   methods: {
+    getMenuSelectedListByRoleId () {
+      const id = this.extraParams.roleId
+      debugger
+      this.$https.jsonp(this.$api.getRoleMenuSelectedListByRoleId, {params: {id: id}}).then((result) => {
+        this.items = result.data
+      }).catch((reason) => {
+        this.$toastr.error('获取带有选择属性菜单失败')
+      })
+    },
     getInfo () {
       const id = this.extraParams.roleId
       this.$https.jsonp(this.$api.getRoleDetailById, {params: {id: id}}).then((result) => {

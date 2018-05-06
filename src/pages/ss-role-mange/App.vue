@@ -40,7 +40,8 @@ export default {
         pageSize: 20
       },
       dictionary: {},
-      content: ''
+      content: '',
+      addIndex: 0
     }
   },
   components: {
@@ -99,9 +100,13 @@ export default {
       ]
     },
     addHandler (e) {
-      this.$vLayer.openPage(DswAddRole, {}, {
+      this.addIndex = this.$vLayer.openPage(DswAddRole, {}, {
         parent: this,
         title: '新增'
+      }, {
+        end: () => {
+          this.getRoleDataByPage()
+        }
       })
     },
     customComponentHandler ({type, index, rowData}) {
