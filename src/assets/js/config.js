@@ -1,4 +1,3 @@
-
 export default {
   // 环境变量
   env: 'developments',
@@ -9,4 +8,5 @@ export default {
   // 请求基地址
   baseURL: 'http://192.168.0.18:8095/caseManager/'
   // baseURL: 'http://192.168.0.188:8095/caseManager/'
+  // baseURL: 'http://192.168.0.123:8095/caseManager/'
 }
