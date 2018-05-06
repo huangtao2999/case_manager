@@ -6,7 +6,7 @@ import https from './https'
 Object.defineProperty(Vue.prototype, '$api', {
   configurable: false,
   enumerable: false,
-  get () {
+  get() {
     return {
       baseUrl: https.defaults.baseURL,
       getAttachment: 'FileUpload/getAttach.json',
@@ -20,10 +20,10 @@ Object.defineProperty(Vue.prototype, '$api', {
       getLog: 'Log/queryPage.json',
       getDossierLists: 'CaseHeaderRpc/list.json',
       getDossierInfo: 'CaseHeaderRpc/detail.json',
+      getBorrowListByPage: 'CaseBorrowRpc/listBorrow.json',
       getDossierSubLists: 'CaseHeaderRpc/listFirstElecArchVo.json',
       getDossierGrandsonLists: 'CaseHeaderRpc/listSecondElecArchVo.json',
       getAttachmentLists: 'FileUpload/listAttach.json',
-      getBorrowListByPage: 'CaseBorrowRpc/listBorrow.json',
       getRectificationHandle: 'CaseCorrectQuestionRpc/list.json',
       getRectificationConfirm: 'CaseCorrectQuestionRpc/listByConfirm.json',
       getDossierTransform: 'CaseTransferRpc/list.json',

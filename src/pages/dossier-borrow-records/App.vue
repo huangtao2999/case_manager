@@ -5,7 +5,7 @@
         <form class="form-inline" @keydown.stop.prevent.enter="searchHandler">
           <div class="form-group">
             <label class="control-label" >内容</label >
-            <input type="text" name="content" v-model="searchCode" class="form-control" />
+            <input type="text" name="content" v-model="content" class="form-control" />
           </div>
           <div class="form-group">
             <search-btn @dsw-click-btn="searchHandler"></search-btn>
@@ -15,7 +15,7 @@
 
       <dsw-table style="width: 100%;" @dsw-filter-method="filterMethodHandler" :isLoadingForTable="isLoadingForTable" :tableData="tableData" :columns="columns" :columnWidthDrag="true" :pagingIndex="paginateInfo.pageSize*(paginateInfo.currentPage-1)"></dsw-table>
 
-      <dsw-pagination slot="panel-footer" :currentPage="paginateInfo.currentPage" :totalRecords="paginateInfo.total" :recordsPerPage="paginateInfo.pageSize" @dsw-pager-change="getBorrowDataByPage"></dsw-pagination>
+      <dsw-pagination slot="panel-footer" :currentPage="paginateInfo.currentPage" :totalRecords="paginateInfo.total" :recordsPerPage="paginateInfo.pageSize" @dsw-pager-change="getLogs"></dsw-pagination>
     </dsw-panel>
   </iframe-container>
 </template >
@@ -39,22 +39,14 @@ export default {
         pageSize: 20
       },
       dictionary: {
-        'CASE_BORROW_STATUS': {
-          '01': '审核中',
-          '02': '审核通过',
-          '03': '待归还',
-          '04': '确认归还',
-          '05': '审核拒绝',
-          '06': '借阅待确认',
-          '07': '已拒绝',
-          '08': '延期归还',
-          '09': '归还待确认'
-        }
+        'LOG_OPT_MODULE': {},
+        'LOG_OPT_TYPE': {}
       },
-      borrowStatusFilters: [],
-      hostUnitNo: '605',
-      status: '',
-      searchCode: ''
+      moduleFilters: [],
+      typeFilters: [],
+      module: '',
+      type: '',
+      content: ''
     }
   },
   components: {
@@ -65,15 +57,27 @@ export default {
     SearchBtn
   },
   created () {
-    //  设置过滤器
-    this.setFilters('borrowStatusFilters', 'CASE_BORROW_STATUS')
+    // 获取字典 并且 设置过滤器
+    const modulePromise = this.getDictionary('LOG_OPT_MODULE', 4).then((result) => {
+      this.setFilters('moduleFilters', 'LOG_OPT_MODULE')
+    })
+    const typePromise = this.getDictionary('LOG_OPT_TYPE', 1).then((result) => {
+      this.setFilters('typeFilters', 'LOG_OPT_TYPE')
+    })
     // 获取表格数据 并且 设置显示列
-    Promise.all([]).then((result) => {
-      this.getBorrowDataByPage()
+    Promise.all([modulePromise, typePromise]).then((result) => {
+      this.getLogs()
       this.setColumns()
     })
   },
   methods: {
+    getDictionary (type, code) {
+      return this.$https.jsonp(this.$api.getDictionary, {params: {type, code}}).then((result) => {
+        result.data.lists.forEach((val) => {
+          this.dictionary[type][val.code] = val.name
+        })
+      })
+    },
     setFilters (filterName, filterType) {
       const _filterType = this.dictionary[filterType]
 
@@ -82,19 +86,19 @@ export default {
         this[filterName].push(filter)
       }
     },
-    getBorrowDataByPage ({pageIndex, recordsPerPage} = {pageIndex: this.paginateInfo.currentPage, recordsPerPage: this.paginateInfo.pageSize}) {
-      const hostUnitNo = this.hostUnitNo
-      const status = this.status
-      const searchCode = this.searchCode
+    getLogs ({pageIndex, recordsPerPage} = {pageIndex: this.paginateInfo.currentPage, recordsPerPage: this.paginateInfo.pageSize}) {
+      const module = this.module
+      const type = this.type
+      const content = this.content
 
       this.isLoadingForTable = true
 
-      this.$https.jsonp(this.$api.getBorrowListByPage, {params: {page: pageIndex, limit: recordsPerPage, hostUnitNo, status, searchCode}}).then((result) => {
+      this.$https.jsonp(this.$api.getLog, {params: {page: pageIndex, limit: recordsPerPage, module, type, content}}).then((result) => {
         this.tableData = result.data.lists
         this.paginateInfo = result.data.pageDto
         this.isLoadingForTable = false
       }).catch((reason) => {
-        this.$toastr.error('获取借入借出列表失败')
+        this.$toastr.error('获取日志列表失败')
         this.isLoadingForTable = false
       })
     },
@@ -111,18 +115,14 @@ export default {
           isResize: true,
           overflowTitle: true
         },
-        {title: '案件编号', field: 'caseNo', width: 100, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
-        {title: '案件编号', field: 'caseName', width: 100, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
-        {title: '案件主办民警', field: 'hostPName', width: 100, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
-        {title: '借阅单位', field: 'createOrgName', width: 100, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
-        {title: '借阅人', field: 'borrowUserName', width: 100, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
         {
-          title: '借阅状态',
-          field: 'status',
+          title: '操作模块',
+          field: 'module',
           formatter: (rowData, rowIndex, pagingIndex, field) => {
-            return this.dictionary['CASE_BORROW_STATUS'][rowData[field]]
+            // 箭头函数 this 指向 vm；普通函数 this 指向 该列的选项
+            return this.dictionary['LOG_OPT_MODULE'][rowData[field]]
           },
-          filters: this.borrowStatusFilters,
+          filters: this.moduleFilters,
           width: 100,
           titleAlign: 'center',
           columnAlign: 'center',
@@ -130,54 +130,34 @@ export default {
           overflowTitle: true
         },
         {
-          title: '预计归还时间',
-          field: 'backDate',
+          title: '操作类型',
+          field: 'type',
           formatter: (rowData, rowIndex, pagingIndex, field) => {
-            if (rowData[field]) {
-              return (new Date(rowData[field])).format()
-            }
+            return this.dictionary['LOG_OPT_TYPE'][rowData[field]]
           },
-          width: 100,
+          filters: this.typeFilters,
+          width: 260,
           titleAlign: 'center',
           columnAlign: 'center',
           isResize: true,
           overflowTitle: true
         },
-        {
-          title: '实际归还时间',
-          field: 'backTime',
-          formatter: (rowData, rowIndex, pagingIndex, field) => {
-            if (rowData[field]) {
-              return (new Date(rowData[field])).format()
-            }
-          },
-          width: 100,
-          titleAlign: 'center',
-          columnAlign: 'center',
-          isResize: true,
-          overflowTitle: true
-        },
-        {title: '借阅事由', field: 'reason', width: 100, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
-        {
-          title: '操作',
-          formatter: (rowData, rowIndex, pagingIndex, field) => {
-            return 1
-          },
-          width: 100,
-          titleAlign: 'center',
-          columnAlign: 'center',
-          isResize: true,
-          overflowTitle: true
-        }
+        {title: 'IP', field: 'ip', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
+        {title: '操作内容', field: 'content', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true},
+        {title: '操作时间', field: 'updateTime', width: 260, titleAlign: 'center', columnAlign: 'center', isResize: true, overflowTitle: true}
       ]
     },
     searchHandler (e) {
-      this.getBorrowDataByPage()
+      this.getLogs()
     },
     filterMethodHandler (filters) {
-      if ((filters['status'] && this.status !== filters['status'][0]) || (filters['status'] === null && this.status)) {
-        this.status = filters['status'] ? filters['status'][0] : ''
-        this.getBorrowDataByPage()
+      if (filters['module'] && this.module !== filters['module'][0]) {
+        this.module = filters['module'][0]
+        this.getLogs()
+      }
+      if (filters['type'] && this.type !== filters['type'][0]) {
+        this.type = filters['type'][0]
+        this.getLogs()
       }
     }
   }
